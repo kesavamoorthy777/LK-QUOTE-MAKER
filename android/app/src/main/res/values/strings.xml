@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">QuotationApp</string>
+    <string name="title_activity_main">QuotationApp</string>
+    <string name="package_name">com.lkcompany.quotation</string>
+    <string name="custom_url_scheme">com.lkcompany.quotation</string>
+</resources>
