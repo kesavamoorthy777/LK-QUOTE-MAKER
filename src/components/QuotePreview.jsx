@@ -1,5 +1,6 @@
 import React from 'react';
 import './QuotePreview.css';
+import { COMPANY_CONFIG } from '../config';
 
 const QuotePreview = ({
     quoteData,
@@ -52,7 +53,6 @@ const QuotePreview = ({
                 </div>
 
                 <div className="preview-body">
-                    {/* Quotation Preview - matches print layout */}
                     <div className="quotation-preview-content" id="quotation-preview">
                         <div className="preview-quotation-box">
 
@@ -62,17 +62,18 @@ const QuotePreview = ({
                                     <img src="/assets/logo.png" alt="LK Logo" className="preview-logo-img" />
                                 </div>
                                 <div className="preview-company-details">
-                                    <h1>LK TECHNICAL SERVICES</h1>
-                                    <p>No.1A, PILLAR KOVIL STREET, KALPATTU. RANIPET. – 631 102.</p>
-                                    <p>Mobile: 8110925990.</p>
-                                    <p className="email">Email Id: <a href="mailto:lktechnicalservices@gmail.com">lktechnicalservices@gmail.com</a></p>
+                                    <h1>{COMPANY_CONFIG.name}</h1>
+                                    <p>{COMPANY_CONFIG.addressLine1}</p>
+                                    <p>{COMPANY_CONFIG.addressLine2}</p>
+                                    <p>Mobile: {COMPANY_CONFIG.mobile}</p>
+                                    <p className="email">Email Id: <a href={`mailto:${COMPANY_CONFIG.email}`}>{COMPANY_CONFIG.email}</a></p>
                                 </div>
                             </div>
 
                             {/* GST/PAN Bar */}
                             <div className="preview-gst-pan-bar">
-                                <div className="gst">GSTIN No: 33RXHPS6816R1Z6</div>
-                                <div className="pan">PAN No: RXHPS6816R</div>
+                                <div className="gst">GSTIN No: {COMPANY_CONFIG.gstin}</div>
+                                <div className="pan">PAN No: {COMPANY_CONFIG.pan}</div>
                             </div>
 
                             {/* Quotation/Invoice Title */}
@@ -156,7 +157,7 @@ const QuotePreview = ({
                                             </tr>
                                         )}
                                         {/* Empty rows to fill space */}
-                                        {items.length > 0 && items.length < 12 && [...Array(12 - items.length)].map((_, i) => (
+                                        {items.length > 0 && items.length < 6 && [...Array(6 - items.length)].map((_, i) => (
                                             <tr key={`empty-${i}`} className="preview-empty-row">
                                                 <td></td><td></td><td></td><td></td><td></td><td></td>
                                             </tr>

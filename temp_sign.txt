@@ -1,0 +1,8 @@
+.preview-auth-sign-label {
+    width: 90%;
+    padding-top: 5px;
+    border-top: 2px solid #000;
+    text-align: center;
+    font-weight: 800;
+    font-size: 12px;
+}

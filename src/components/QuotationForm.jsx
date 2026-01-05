@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import html2pdf from 'html2pdf.js';
 import './QuotationForm.css';
 import QuotePreview from './QuotePreview';
+import { COMPANY_CONFIG } from '../config';
 
 const QuotationForm = () => {
     // Form Type State (Quotation or Invoice)
@@ -55,16 +57,16 @@ const QuotationForm = () => {
         {
             id: 2,
             name: 'M/S:MAGHA ENGINEERS',
-            address1: 'NO : 8, ELECTRICAL INDUSTRIAL ESTATE, KAKALUR,',
-            address2: 'THIRUVALLUR, PIN CODE– 602003.',
-            gst: ''
+            address1: 'NO : 212, Echoor, Oragadam, Kanchipuram,',
+            address2: 'Pin Code - 631604',
+            gst: '33DMHPS7852G1ZN'
         },
         {
             id: 3,
             name: 'M/S, RICO AUTO INDUSTRIES LTD (CHE)',
-            address1: 'ORAGADAM, MATHUR VILLAGE, SRIPERUMBUDUR TALUK,',
-            address2: 'KANCHIPURAM, PIN – 602105.',
-            gst: ''
+            address1: 'No : 9, SIPCOT INDUSTRIAL GROWTH CENTER, ORAGADAM,',
+            address2: 'MATHUR VILLAGE, SRIPERUMBUDUR TALUK, KANCHIPURAM - 602105.',
+            gst: '33AAACR8724R1ZU'
         },
         {
             id: 4,
@@ -72,6 +74,20 @@ const QuotationForm = () => {
             address1: 'NO: 458 &465 SIDCO INDUSTRIAL ESTATE, AMBATTUR,',
             address2: 'CHENNAI -600098.',
             gst: '33AAGCA4099J1ZH'
+        },
+        {
+            id: 5,
+            name: 'M/S, SRI LAXMI VENKATESHWARA',
+            address1: '2ND FLOOR, NO 8. ESCORTS EMPLOYEES COLONY,',
+            address2: 'YELAHANKA, KARNATAKA BANGALORE-560064',
+            gst: '29EOXPS6491Q1Z5'
+        },
+        {
+            id: 6,
+            name: 'RSB Transmissions (I) Ltd.',
+            address1: 'G23, G24, Sipcot Industrial Park Katrambakkam,',
+            address2: 'Irungattukottai, Tal- Sriperumbudur Dist-Kanchipuram-602117, Tamil Nadu',
+            gst: ''
         }
     ]);
 
@@ -121,74 +137,45 @@ const QuotationForm = () => {
     const downloadPDF = async () => {
         setIsGeneratingPDF(true);
         try {
-            const response = await fetch('http://localhost:3001/generate-pdf', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    formType,
-                    quoteNo: formNo, // Sending as quoteNo for compatibility or invoiceNo
-                    quoteDate: formatDateForDisplay(formDate),
-                    reference,
-                    // Invoice fields
-                    invoiceNo: formNo,
-                    invoiceDate: formatDateForDisplay(formDate),
-                    orderNo,
-                    orderDate: formatDateForDisplay(orderDate),
-
-                    recipientName,
-                    recipientAddress1,
-                    recipientAddress2,
-                    recipientGST,
-                    items,
-                    basicValue,
-                    sgst,
-                    cgst,
-                    roundOff,
-                    grandTotal,
-                    amountInWords: numberToWords(grandTotal),
-                    priceTerms,
-                    paymentTerms,
-                    transitInsurance,
-                    freightTerms
-                }),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || `Server error: ${response.status}`);
+            const element = document.getElementById('quotation-preview');
+            if (!element) {
+                throw new Error('Preview element not found');
             }
 
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
             const prefix = formType === 'invoice' ? 'Invoice' : 'Quotation';
-            a.download = `${prefix}_${formNo || 'draft'}.pdf`;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
+            const fileName = `${prefix}_${formNo || 'draft'}.pdf`;
+
+            const opt = {
+                margin: 0,
+                filename: fileName,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: {
+                    scale: 3, // Increased for higher resolution
+                    useCORS: true,
+                    logging: false,
+                    letterRendering: true,
+                    allowTaint: true
+                },
+                pagebreak: { mode: 'avoid-all' },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            // Generate PDF
+            await html2pdf().set(opt).from(element).save();
+
         } catch (error) {
             console.error('Error generating PDF:', error);
-            const isNetworkError = error.message === 'Failed to fetch' || error.message.includes('NetworkError');
-
-            if (isNetworkError) {
-                alert('Connection refused. Please ensure the backend server is running on port 3001.\n\nTip: Run "npm run server" in your terminal.');
-            } else {
-                alert(`Failed to generate PDF: ${error.message}`);
-            }
+            alert(`Failed to generate PDF: ${error.message}`);
         } finally {
             setIsGeneratingPDF(false);
         }
     };
 
-    // Terms and Conditions State
-    const [priceTerms, setPriceTerms] = useState('Ex Godown, Ranipet');
-    const [paymentTerms, setPaymentTerms] = useState('Immediate');
-    const [transitInsurance, setTransitInsurance] = useState('Your Scope');
-    const [freightTerms, setFreightTerms] = useState('Included');
+    // Terms and Conditions State (Initialized from config)
+    const [priceTerms, setPriceTerms] = useState(COMPANY_CONFIG.defaultTerms.priceTerms);
+    const [paymentTerms, setPaymentTerms] = useState(COMPANY_CONFIG.defaultTerms.paymentTerms);
+    const [transitInsurance, setTransitInsurance] = useState(COMPANY_CONFIG.defaultTerms.transitInsurance);
+    const [freightTerms, setFreightTerms] = useState(COMPANY_CONFIG.defaultTerms.freightTerms);
 
     // Line Items
     const [items, setItems] = useState([]);
@@ -288,17 +275,18 @@ const QuotationForm = () => {
                         <img src="/assets/logo.png" alt="LK Logo" className="logo-img" />
                     </div>
                     <div className="company-details">
-                        <h1>LK TECHNICAL SERVICES</h1>
-                        <p>No.1A, PILLAR KOVIL STREET, KALPATTU. RANIPET. – 631 102.</p>
-                        <p>Mobile: 8110925990.</p>
-                        <p className="email">Email Id: <a href="mailto:lktechnicalservices@gmail.com">lktechnicalservices@gmail.com</a></p>
+                        <h1>{COMPANY_CONFIG.name}</h1>
+                        <p>{COMPANY_CONFIG.addressLine1}</p>
+                        <p>{COMPANY_CONFIG.addressLine2}</p>
+                        <p>Mobile: {COMPANY_CONFIG.mobile}</p>
+                        <p className="email">Email Id: <a href={`mailto:${COMPANY_CONFIG.email}`}>{COMPANY_CONFIG.email}</a></p>
                     </div>
                 </div>
 
                 {/* GST/PAN Bar */}
                 <div className="gst-pan-bar">
-                    <div className="gst">GSTIN No: 33RXHPS6816R1Z6</div>
-                    <div className="pan">PAN No: RXHPS6816R</div>
+                    <div className="gst">GSTIN No: {COMPANY_CONFIG.gstin}</div>
+                    <div className="pan">PAN No: {COMPANY_CONFIG.pan}</div>
                 </div>
 
                 {/* Quotation/Invoice Title Bar */}
