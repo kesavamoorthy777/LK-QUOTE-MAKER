@@ -318,7 +318,7 @@
 }
 
 .preview-col-hsn {
-    width: 65px;
+    width: 90px;
 }
 
 .preview-col-qty {
@@ -354,6 +354,10 @@
     font-size: 12px;
     font-weight: 700;
     border-bottom: 0.5px solid #333;
+}
+
+.preview-total-row:nth-child(2) .preview-t-value {
+    color: #b42318;
 }
 
 .preview-t-label {

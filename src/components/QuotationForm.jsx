@@ -182,21 +182,28 @@ const QuotationForm = () => {
 
     // Calculations
     const [basicValue, setBasicValue] = useState(0);
+    const [discountEnabled, setDiscountEnabled] = useState(false);
+    const [discountPercent, setDiscountPercent] = useState(0);
     const [sgst, setSgst] = useState(0);
     const [cgst, setCgst] = useState(0);
     const [roundOff, setRoundOff] = useState(0);
     const [grandTotal, setGrandTotal] = useState(0);
 
-    // Calculate totals whenever items change
+    const discountAmount = basicValue * ((discountEnabled ? (Number(discountPercent) || 0) : 0) / 100);
+
+    // Calculate totals whenever items or discount change
     useEffect(() => {
         const basic = items.reduce((sum, item) => {
             const amount = (item.quantity || 0) * (item.unitRate || 0);
             return sum + amount;
         }, 0);
 
-        const sgstAmount = basic * 0.09;
-        const cgstAmount = basic * 0.09;
-        const subtotal = basic + sgstAmount + cgstAmount;
+        const percent = discountEnabled ? (Number(discountPercent) || 0) : 0;
+        const reduction = basic * (percent / 100);
+        const taxableBase = Math.max(0, basic - reduction);
+        const sgstAmount = taxableBase * 0.09;
+        const cgstAmount = taxableBase * 0.09;
+        const subtotal = taxableBase + sgstAmount + cgstAmount;
         const rounded = Math.round(subtotal);
         const roundOffValue = rounded - subtotal;
 
@@ -205,7 +212,7 @@ const QuotationForm = () => {
         setCgst(cgstAmount);
         setRoundOff(roundOffValue);
         setGrandTotal(rounded);
-    }, [items]);
+    }, [items, discountEnabled, discountPercent]);
 
     // Add new item
     const addItem = () => {
@@ -511,6 +518,42 @@ const QuotationForm = () => {
                             <div className="t-label">Basic Value</div>
                             <div className="t-value">{basicValue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                         </div>
+
+                        <div className="total-row discount-toggle-row">
+                            <div className="t-label">Discount</div>
+                            <div className="discount-switch">
+                                <button
+                                    type="button"
+                                    className={`switch-option ${!discountEnabled ? 'active' : ''}`}
+                                    onClick={() => setDiscountEnabled(false)}
+                                >
+                                    Off
+                                </button>
+                                <button
+                                    type="button"
+                                    className={`switch-option ${discountEnabled ? 'active' : ''}`}
+                                    onClick={() => setDiscountEnabled(true)}
+                                >
+                                    On
+                                </button>
+                            </div>
+                        </div>
+
+                        {discountEnabled && (
+                            <div className="total-row discount-row">
+                                <div className="t-label">Discount %</div>
+                                <input
+                                    type="number"
+                                    className="total-input"
+                                    min="0"
+                                    max="100"
+                                    step="0.01"
+                                    value={discountPercent}
+                                    onChange={(e) => setDiscountPercent(parseFloat(e.target.value) || 0)}
+                                />
+                            </div>
+                        )}
+
                         <div className="total-row">
                             <div className="t-label">SGST TAX 9 %</div>
                             <div className="t-value">{sgst.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
@@ -674,6 +717,9 @@ const QuotationForm = () => {
                         recipientGST,
                         items,
                         basicValue,
+                        discountEnabled,
+                        discountPercent,
+                        discountAmount,
                         sgst,
                         cgst,
                         roundOff,

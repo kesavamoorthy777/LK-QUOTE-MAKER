@@ -404,9 +404,57 @@
 .total-row {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     font-size: 0.95rem;
     font-weight: 600;
     color: var(--text-secondary);
+}
+
+.discount-toggle-row {
+    gap: 1rem;
+}
+
+.discount-switch {
+    display: inline-flex;
+    background: #f3f4f6;
+    border: 1px solid var(--border-subtle);
+    border-radius: 999px;
+    padding: 0.2rem;
+    gap: 0.2rem;
+}
+
+.switch-option {
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.38rem 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.switch-option.active {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 2px 8px rgba(31, 41, 55, 0.18);
+}
+
+.discount-row {
+    gap: 1rem;
+}
+
+.total-input {
+    width: 120px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    padding: 0.45rem 0.6rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    background: white;
+    color: var(--text-primary);
+    text-align: right;
 }
 
 .grand-total {

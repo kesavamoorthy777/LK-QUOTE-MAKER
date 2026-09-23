@@ -18,6 +18,9 @@ const QuotePreview = ({
         recipientGST,
         items,
         basicValue,
+        discountEnabled,
+        discountPercent,
+        discountAmount,
         sgst,
         cgst,
         roundOff,
@@ -196,6 +199,12 @@ const QuotePreview = ({
                                         <div className="preview-t-label">Basic Value</div>
                                         <div className="preview-t-value">{basicValue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                                     </div>
+                                    {discountEnabled && (
+                                        <div className="preview-total-row">
+                                            <div className="preview-t-label">Discount ({Number(discountPercent || 0).toFixed(2)}%)</div>
+                                            <div className="preview-t-value">{(discountAmount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                                        </div>
+                                    )}
                                     <div className="preview-total-row">
                                         <div className="preview-t-label">SGST TAX 9 %</div>
                                         <div className="preview-t-value">{sgst.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
