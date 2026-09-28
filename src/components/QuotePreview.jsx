@@ -200,7 +200,7 @@ const QuotePreview = ({
                                         <div className="preview-t-value">{basicValue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                                     </div>
                                     {discountEnabled && (
-                                        <div className="preview-total-row">
+                                        <div className="preview-total-row discount-row">
                                             <div className="preview-t-label">Discount ({Number(discountPercent || 0).toFixed(2)}%)</div>
                                             <div className="preview-t-value">{(discountAmount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                                         </div>
