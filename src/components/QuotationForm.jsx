@@ -412,12 +412,12 @@ const QuotationForm = () => {
                                 <tr key={item.id}>
                                     <td className="text-center">{index + 1}.</td>
                                     <td className="text-left">
-                                        <input
-                                            type="text"
-                                            className="table-input"
+                                        <textarea
+                                            className="table-input table-textarea"
                                             value={item.description}
                                             onChange={(e) => updateItem(item.id, 'description', e.target.value)}
                                             placeholder="Enter description"
+                                            rows={2}
                                         />
                                     </td>
                                     <td className="text-center">
@@ -541,10 +541,10 @@ const QuotationForm = () => {
 
                         {discountEnabled && (
                             <div className="total-row discount-row">
-                                <div className="t-label">Discount %</div>
+                                <div className="t-label discount-label">Discount %</div>
                                 <input
                                     type="number"
-                                    className="total-input"
+                                    className="total-input discount-input"
                                     min="0"
                                     max="100"
                                     step="0.01"
